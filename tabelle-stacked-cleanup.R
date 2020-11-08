@@ -52,17 +52,11 @@ str(st)
 st <- subset(st, plot==2)
 
 ## output preparation
-# relabel only
-sl <- data.frame(
-  Jahr=st$year,
-  Baumart=st$treekind,
-  Schadenshöhe=st$damage
-)
-#str(sl)
 
 # Stacked
-p <- ggplot(sl, aes(x=Jahr, fill=Baumart, y=Schadenshöhe)) +
-    geom_bar(position="stack", stat="identity")
+p <- ggplot(st, aes(x=year, fill=treekind, y=damage)) +
+    geom_bar(position="stack", stat="identity") +
+    labs(x = 'Jahr', y = 'Höhe1 verbissen', fill = 'Baumart')
     #geom_col(position="dodge")
     #geom_col()
 ggsave("out.png", plot = p, dpi=100)
