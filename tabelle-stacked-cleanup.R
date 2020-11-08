@@ -3,39 +3,45 @@
 library(ggplot2)
 
 # raw csv data
-sasa_eaten_data_raw = read.csv2("sasa_eaten.csv", sep=",", dec=".")
-#str(sasa_eaten_data_raw)
-sr = sasa_eaten_data_raw
-#"SaSa eaten data RAW"
-#sr
+"SaSa eaten data RAW"
+sasa_eaten_data_raw <- read.csv2("sasa_eaten.csv", sep=",", dec=".")
+sr <- sasa_eaten_data_raw
+
+# sas raw data internal labled
+"internal labeling"
+srl <- data.frame(year=sr$Jahr,treekind=sr$Baumart,demage=sr$Fraß)
+str(srl)
+
 
 # raw typing
-sasa_eaten_data_typed = data.frame(year=as.factor(sr$Jahr),treekind=sr$Baumart,demage=sr$Fraß)
-#str(sasa_eaten_data_typed)
-st = sasa_eaten_data_typed
 "SaSa eaten data after Typing"
-st
+sasa_eaten_data_typed <- data.frame(year=as.factor(srl$year),treekind=srl$treekind,demage=srl$demage)
+st <- sasa_eaten_data_typed
+str(st)
+#st
 
-# relabel only
-sasa_eaten_data_labeled = data.frame(Jahr=st$year,Baumart=st$treekind,Schadenshöhe=st$demage)
-
-
-# synthetic
-sasa_year <- c(rep("2000" , 3) , rep("2021" , 3) , rep("2029" , 3) , rep("2063" , 3) )
-#sasa_year <- c(rep(2000 , 3) , rep(2021 , 3) , rep(2029 , 3) , rep(2063 , 3) )
-sasa_treekind <- rep(c("Buche" , "Fichte" , "Grenzstein") , 4)
-sasa_eaten <- abs(rnorm(12 , 0 , 15))
-sasa_eaten_data_synthetic <- data.frame(Jahr=sasa_year,Baumart=sasa_treekind,Schadenshöhe=sasa_eaten)
 
 "SaSa Eaten Data Synthetic"
-#str(sasa_eaten_data_synthetic)
+syn_year <- c(rep("2000" , 3) , rep("2021" , 3) , rep("2029" , 3) , rep("2063" , 3) )
+syn_year <- rep(syn_year, 2)
+syn_treekind <- rep(c("Buche" , "Fichte" , "Grenzstein") , 4)
+syn_treekind <- rep(syn_treekind, 2)
+syn_demage <- abs(rnorm(12 , 0 , 15))
+syn_demage <- rep(syn_demage, 2)
+synthetic <- data.frame(year=syn_year,treekind=syn_treekind,demage=syn_demage)
+str(synthetic)
+#sasa_eaten_data_synthetic
 
 # selection
-sasa_eaten_data = sasa_eaten_data_labeled 
-#sasa_eaten_data = sasa_eaten_data_synthetic
+#sd <- st
+sd <- synthetic
+
+# relabel only
+sl <- data.frame(Jahr=sd$year, Baumart=sd$treekind, Schadenshöhe=sd$demage)
+str(sl)
 
 # Stacked
-p = ggplot(sasa_eaten_data, aes(x=Jahr, fill=Baumart, y=Schadenshöhe)) + 
+p <- ggplot(sl, aes(x=Jahr, fill=Baumart, y=Schadenshöhe)) +
     geom_bar(position="stack", stat="identity")
     #geom_col(position="dodge")
     #geom_col()
