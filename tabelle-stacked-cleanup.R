@@ -21,11 +21,10 @@ synthetic <- data.frame(
   Baumart=syn_treekind,
   Fraß=syn_demage
 )
-#sasa_eaten_data_synthetic
 
 # synthetic selection
 "selection"
-sr <- synthetic
+#sr <- synthetic #uncomment to use made-up data
 str(sr)
 
 # sas raw data internal labled
@@ -49,7 +48,10 @@ sasa_eaten_data_typed <- data.frame(
 st <- sasa_eaten_data_typed
 str(st)
 #st
+## calculations
+st <- subset(st, plot==2)
 
+## output preparation
 # relabel only
 sl <- data.frame(
   Jahr=st$year,
