@@ -10,21 +10,21 @@ sr <- sasa_eaten_data_raw
 "SaSa Eaten Data Synthetic"
 syn_year <- c(rep(2000 , 3) , rep(2021 , 3) , rep(2029 , 3) , rep(2063 , 3) )
 syn_year <- rep(as.integer(syn_year), 4)
-syn_treekind <- rep(c("Buche" , "Fichte" , "Grenzstein") , 4)
+syn_treekind <- rep(c("Buche" , "Fichte" , "BI") , 4)
 syn_treekind <- rep(syn_treekind, 4)
 syn_plot <- as.integer(c(rep(1, 12), rep(2, 12), rep(3,12), rep(4,12)))
-syn_demage <- abs(rnorm(12 , 0 , 15))
-syn_demage <- rep(syn_demage, 4)
+syn_damage <- abs(rnorm(12 , 0 , 15))
+syn_damage <- rep(syn_damage, 4)
 synthetic <- data.frame(
   Jahr=syn_year,
   Plot=syn_plot,
   Baumart=syn_treekind,
-  Fraß=syn_demage
+  `Höhe1.verbissen`=syn_damage
 )
 
 # synthetic selection
 "selection"
-#sr <- synthetic #uncomment to use made-up data
+sr <- synthetic #uncomment to use made-up data
 str(sr)
 
 # sas raw data internal labled
@@ -33,7 +33,7 @@ srl <- data.frame(
   year=sr$Jahr,
   "plot"=sr$Plot,
   treekind=sr$Baumart,
-  demage=sr$Fraß
+  damage=sr$`Höhe1.verbissen`
 )
 #str(srl)
 
@@ -43,7 +43,7 @@ sasa_eaten_data_typed <- data.frame(
   year=as.factor(srl$year),
   "plot"=srl$"plot",
   treekind=srl$treekind,
-  demage=srl$demage
+  damage=srl$damage
 )
 st <- sasa_eaten_data_typed
 str(st)
@@ -56,7 +56,7 @@ st <- subset(st, plot==2)
 sl <- data.frame(
   Jahr=st$year,
   Baumart=st$treekind,
-  Schadenshöhe=st$demage
+  Schadenshöhe=st$damage
 )
 #str(sl)
 
