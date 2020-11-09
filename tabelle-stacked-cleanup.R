@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 library(ggplot2)
+library(tidyr)
 
 # raw csv data
 rawdata <- read.csv2("sasa_eaten.csv", sep=",", dec=".")
@@ -34,16 +35,17 @@ rawdata <- build_synthetic_data() #uncomment to use made-up data
 
 # sas raw data internal labled
 as_internal_labels <- function(sr) {
+  # tc is tree_count
   data.frame(
     year=sr$Jahr,
     `plot`=sr$Plot,
     species=sr$Baumart,
-    tree_count.size1.game_damage=sr$`Höhe1.verbissen`,
-    tree_count.size1.intact=sr$`Höhe1.unverbissen`,
-    tree_count.size2.game_damage=sr$`Höhe2.verbissen`,
-    tree_count.size2.intact=sr$`Höhe2.unverbissen`,
-    tree_count.size3.game_damage=sr$`Höhe3.verbissen`,
-    tree_count.size3.intact=sr$`Höhe3.unverbissen`
+    tc.size1.game_damage=sr$`Höhe1.verbissen`,
+    tc.size1.intact=sr$`Höhe1.unverbissen`,
+    tc.size2.game_damage=sr$`Höhe2.verbissen`,
+    tc.size2.intact=sr$`Höhe2.unverbissen`,
+    tc.size3.game_damage=sr$`Höhe3.verbissen`,
+    tc.size3.intact=sr$`Höhe3.unverbissen`
   )
 }
 internal_data <- as_internal_labels(rawdata)
@@ -51,16 +53,27 @@ internal_data <- as_internal_labels(rawdata)
 # raw typing
 # convert input int years to Factors
 internal_data$year <- as.factor(internal_data$year)
-clean_internal_data <- internal_data
+pivot_data <- pivot_longer(
+  internal_data,
+  tc.size1.game_damage:tc.size3.intact,
+  names_to=c("size_groups", "damage"),
+  names_prefix="tc\\.",
+  names_sep="\\.",
+  values_to="tree_count"
+)
+pivot_data$size_groups <- as.factor(pivot_data$size_groups)
+pivot_data$damage <- as.factor(pivot_data$damage)
 
 ## calculations
-st <- subset(clean_internal_data, plot==2)
+pivot_data <- subset(pivot_data, plot==1 )
+pivot_data <- subset(pivot_data, size_groups=="size1")
+st <- subset(pivot_data, damage=="game_damage")
 
 ## output preparation
 
 # Stacked
-p <- ggplot(st, aes(x=year, fill=species, y=tree_count.size1.game_damage)) +
-    geom_bar(position=position_stack(), stat=stat_identity()) +
+p <- ggplot(st, aes(x=year, fill=species, y=`tree_count`)) +
+    geom_bar(position=position_stack(), stat="identity") +
     labs(x = 'Jahr', y = 'Höhe1 verbissen', fill = 'Baumart')
     #geom_col(position="dodge")
     #geom_col()
