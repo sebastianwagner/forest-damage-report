@@ -8,16 +8,25 @@ rawdata <- read.csv2("sasa_eaten.csv", sep=",", dec=".")
 build_synthetic_data <- function() {
   syn_year <- c(rep(2000 , 3) , rep(2021 , 3) , rep(2029 , 3) , rep(2063 , 3) )
   syn_year <- rep(as.integer(syn_year), 4)
-  syn_treekind <- rep(c("Buche" , "Fichte" , "BI") , 4)
-  syn_treekind <- rep(syn_treekind, 4)
+  syn_species <- rep(c("Buche" , "Fichte" , "BI") , 4)
+  syn_species <- rep(syn_species, 4)
   syn_plot <- as.integer(c(rep(1, 12), rep(2, 12), rep(3,12), rep(4,12)))
-  syn_damage <- abs(rnorm(12 , 0 , 15))
-  syn_damage <- rep(syn_damage, 4)
+  tree_count.size1.game_damage <- rep(abs(rnorm(12 , 0 , 15)), 4)
+  tree_count.size1.intact <- rep(abs(rnorm(12 , 0 , 15)), 4)
+  tree_count.size2.game_damage <- rep(abs(rnorm(12 , 0 , 15)), 4)
+  tree_count.size2.intact <- rep(abs(rnorm(12 , 0 , 15)), 4)
+  tree_count.size3.game_damage <- rep(abs(rnorm(12 , 0 , 15)), 4)
+  tree_count.size3.intact <- rep(abs(rnorm(12 , 0 , 15)), 4)
   data.frame(
     Jahr=syn_year,
     Plot=syn_plot,
-    Baumart=syn_treekind,
-    `Höhe1.verbissen`=syn_damage
+    Baumart=syn_species,
+    `Höhe1.verbissen`=tree_count.size1.game_damage,
+    `Höhe1.unverbissen`=tree_count.size1.intact,
+    `Höhe2.verbissen`=tree_count.size2.game_damage,
+    `Höhe2.unverbissen`=tree_count.size2.intact,
+    `Höhe3.verbissen`=tree_count.size3.game_damage,
+    `Höhe3.unverbissen`=tree_count.size3.intact
   )
 }
 # synthetic selection
@@ -27,9 +36,14 @@ rawdata <- build_synthetic_data() #uncomment to use made-up data
 as_internal_labels <- function(sr) {
   data.frame(
     year=sr$Jahr,
-    "plot"=sr$Plot,
-    treekind=sr$Baumart,
-    tree_count.size1.game_damage=sr$`Höhe1.verbissen`
+    `plot`=sr$Plot,
+    species=sr$Baumart,
+    tree_count.size1.game_damage=sr$`Höhe1.verbissen`,
+    tree_count.size1.intact=sr$`Höhe1.unverbissen`,
+    tree_count.size2.game_damage=sr$`Höhe2.verbissen`,
+    tree_count.size2.intact=sr$`Höhe2.unverbissen`,
+    tree_count.size3.game_damage=sr$`Höhe3.verbissen`,
+    tree_count.size3.intact=sr$`Höhe3.unverbissen`
   )
 }
 internal_data <- as_internal_labels(rawdata)
@@ -45,8 +59,8 @@ st <- subset(clean_internal_data, plot==2)
 ## output preparation
 
 # Stacked
-p <- ggplot(st, aes(x=year, fill=treekind, y=tree_count.size1.game_damage)) +
-    geom_bar(position="stack", stat="identity") +
+p <- ggplot(st, aes(x=year, fill=species, y=tree_count.size1.game_damage)) +
+    geom_bar(position=position_stack(), stat=stat_identity()) +
     labs(x = 'Jahr', y = 'Höhe1 verbissen', fill = 'Baumart')
     #geom_col(position="dodge")
     #geom_col()
