@@ -64,6 +64,8 @@ pivot_data <- pivot_longer(
 pivot_data$size_groups <- as.factor(pivot_data$size_groups)
 pivot_data$damage <- as.factor(pivot_data$damage)
 
+all_trees <- pivot_wider(pivot_data, year:size_groups, names_from=damage, names_prefix="tc.", values_from=tree_count)
+
 ## calculations
 pivot_data <- subset(pivot_data, plot==1 )
 pivot_data <- subset(pivot_data, size_groups=="size1")
